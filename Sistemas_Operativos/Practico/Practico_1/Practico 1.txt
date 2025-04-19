@@ -1,0 +1,106 @@
+
+a. Listar los procesos que están en estado de ejecución (ver el comando ps, hacer man ps para leer el manual del comando). 
+    Con el siguiente comando, aparecen todos los procesos en ejecucion, con sus nombres, ID y usuario que ejecuto.
+                                                            ps -ef
+
+c. Determinar cuál es el directorio corriente (carpeta actual): Usa el comando pwd (print working directory).
+
+
+d. Determinar cuál es tu directorio de trabajo (home): echo $HOME.
+
+e. Listar los archivos (con sus detalles) de la carpeta corriente y de la carpeta raíz sin cambiarse de directorio: 
+ ls -l .    (carpeta corriente)
+ ls -l /    (carpeta raiz)
+
+f. Listar el contenido de algún archivo: cat nombreArchivo
+    Por paginas: 
+        more nombre_del_archivo
+        less nombre_del_archivo
+
+g. Listar y analizar las variables de ambiente de tu sesión con 'env'
+    Si quieres ver una variable específica: echo $NOMBRE_VARIABLE
+
+
+
+h. Crear un archivo con al menos tres comandos diferentes.
+
+    # Comando 1: Crear el archivo vacío
+    touch mi_archivo.txt
+
+    # Comando 2: Agregar contenido inicial al archivo
+    echo "Primera línea de texto" > mi_archivo.txt
+
+    # Comando 3: Agregar más contenido al archivo sin sobrescribir
+    echo "Segunda línea de texto" >> mi_archivo.txt
+
+i.Crear un enlace simbólico o alias a un archivo o carpeta (ver el comando ln).
+
+    El comando ln en Linux se utiliza para crear enlaces, incluyendo enlaces simbólicos (también conocidos como "symlinks"), 
+    que funcionan como accesos directos a archivos o carpetas.
+
+    ln -s /ruta/a/mi_archivo.txt mi_enlace_simbolico.txt
+
+    Esto crea un enlace simbólico llamado mi_enlace_simbolico.txt que apunta al archivo mi_archivo.txt. 
+    Si modificas el archivo original, los cambios se reflejarán cuando accedas al enlace.
+
+
+    ln -s /ruta/a/mi_carpeta mi_enlace_a_carpeta
+
+    Este comando crea un enlace llamado mi_enlace_a_carpeta que apunta a la carpeta mi_carpeta. 
+    Accediendo a mi_enlace_a_carpeta, puedes trabajar con el contenido de la carpeta original.
+
+j. Eliminar el enlace simbólico creado. Determinar la diferencia entre symbolic links y hard links.
+
+    # Para eliminar el enlace simbolico creado. Podemos utilizar el comando 'rm'
+        rm mi_enlace_simbolico.txt (Esto eliminará únicamente el enlace simbólico, pero no afectará el archivo o carpeta original al que apunta).
+    
+    	Enlace Simbólico (Symbolic Link)
+        # Es un acceso directo que apunta al archivo o carpeta original.	
+        # Si el archivo original se elimina, el enlace simbólico queda roto.
+        # Puede apuntar a ubicaciones en discos diferentes.
+        # Ocupa muy poco espacio (solo la referencia).
+        # Se crea con el siguiente comando: ln -s archivo destino
+
+        Enlace Duro (Hard Link)
+        # Es una referencia directa a los datos en el sistema de archivos.
+        # Si el archivo original se elimina, el enlace duro sigue funcionando.
+        # Solo puede apuntar a archivos dentro del mismo sistema de archivos.
+        # Comparte el espacio del archivo original (ambos son iguales).
+        # Se crea con el siguiente comando: ln archivo destino
+
+
+Ejercicio 2:
+ A. Dados dos archivos de texto el cual contiene una lista de direcciones de correo electrónico (una por línea), 
+    generar un archivo con la lista ordenada y sin duplicados. Ayuda: ver sort y uniq. Los archivos temporales deberían crearse en /tmp. 
+    
+        cat archivo1.txt archivo2.txt > /tmp/emails_tmp.txt
+        sort /tmp/emails_tmp.txt > /tmp/emails_sorted.txt 
+        uniq /tmp/emails_sorted.txt > /tmp/emails_limpios.txt
+        rm /tmp/emails_tmp.txt /tmp/emails_sorted.txt
+
+        # cat archivo1.txt archivo2.txt → Combina ambos archivos en una sola salida.
+        # sort → Ordena las direcciones de correo alfabéticamente.
+        # uniq → Elimina los correos electrónicos duplicados (requiere que estén ordenados previamente).
+
+B. Idem al anterior pero hacerlo en un único comando usando el operador secuencial. 
+    Si se quiere ejecutar todo en una sola línea con el operador secuencial ;, sería:
+
+    cat archivo_mails.txt archivo_mails2.txt > /tmp/emails_tmp.txt ; sort /tmp/emails_tmp.txt | uniq > /tmp/emails_sort.txt ; rm /tmp/emails_tmp.txt
+
+C. Escribir un comando que filtre y cuente las direcciones terminadas en google.com. Ver grep y wc. 
+
+    grep -E '@google\.com$' archivo.txt | wc -l
+        # grep -E '@google\.com$' archivo.txt → Filtra las líneas que terminan con @google.com ($ indica el final de la línea).
+        # wc -l → Cuenta la cantidad de líneas filtradas.
+
+
+Ejercicio 3: 
+    Repetir lo del primer ítem del ejercicio anterior pero sin usar archivos temporales (ver pipes). 
+        #  cat archivo1.txt archivo2.txt | sort | uniq > /tmp/emails_limpios.txt
+
+        # Los pipes (|) en sistemas Unix/Linux (como en la terminal) se usan para encadenar varios comandos, 
+        de manera que la salida de un comando se convierte en la entrada del siguiente comando. 
+        Esto permite realizar tareas complejas de manera eficiente sin necesidad de archivos intermedios.
+
+Ejercicio 4:
+

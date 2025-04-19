@@ -1,0 +1,5 @@
+juan.perez@example.com
+maria.gomez@example.org
+carlos.lopez@example.net
+ana.sanchez@example.com
+juan.perez@example.com

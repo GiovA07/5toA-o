@@ -1,0 +1,90 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /tmp/ccrXQt9J.o
+LOAD /tmp/ccCx7Gtc.o
+LOAD /tmp/cclGZcDn.o
+                0x80000000                        . = 0x80000000
+                0x80000000                        __kernel_start = .
+
+.text           0x80000000      0x1c8
+ *(.text.boot)
+ *(.text .text.*)
+ .text          0x80000000       0x8c /tmp/ccrXQt9J.o
+                0x80000000                boot
+                0x80000074                cpuid
+                0x8000007c                disable_interrupts
+                0x80000084                enable_interrupts
+ .text          0x8000008c       0xc8 /tmp/ccCx7Gtc.o
+                0x8000008c                console_putc
+                0x800000c0                console_puts
+                0x80000104                kernel_main
+ .text          0x80000154       0x74 /tmp/cclGZcDn.o
+                0x80000154                acquire
+                0x80000198                release
+
+.rodata         0x800001c8       0x2b
+ *(.rodata .rodata.*)
+ .rodata.str1.4
+                0x800001c8       0x2b /tmp/ccCx7Gtc.o
+
+.eh_frame       0x800001f4       0xd8
+ .eh_frame      0x800001f4       0x84 /tmp/ccCx7Gtc.o
+ .eh_frame      0x80000278       0x54 /tmp/cclGZcDn.o
+                                 0x68 (size before relaxing)
+
+.eh_frame_hdr   0x800002cc       0x34
+ .eh_frame_hdr  0x800002cc       0x34 /tmp/ccCx7Gtc.o
+                0x800002cc                __GNU_EH_FRAME_HDR
+
+.rela.dyn       0x80000300        0x0
+ .rela.text     0x80000300        0x0 /tmp/ccrXQt9J.o
+
+.data           0x80000300        0x0
+ *(.data .data.*)
+ .data          0x80000300        0x0 /tmp/ccrXQt9J.o
+ .data          0x80000300        0x0 /tmp/ccCx7Gtc.o
+ .data          0x80000300        0x0 /tmp/cclGZcDn.o
+
+.bss            0x80000300        0x4
+                0x80000300                        __bss = .
+ *(.bss .bss.* .sbss .sbss.*)
+ .bss           0x80000300        0x0 /tmp/ccrXQt9J.o
+ .bss           0x80000300        0x0 /tmp/ccCx7Gtc.o
+ .sbss          0x80000300        0x4 /tmp/ccCx7Gtc.o
+                0x80000300                lk
+ .bss           0x80000304        0x0 /tmp/cclGZcDn.o
+                0x80000304                        __bss_end = .
+                0x80000304                        __stack0 = .
+                0x80000304                        . = ALIGN (0x4)
+                0x80004304                        . = (. + 0x4000)
+                0x80004304                        __kernel_end = .
+OUTPUT(kernel elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x3c
+ .riscv.attributes
+                0x00000000       0x3a /tmp/ccrXQt9J.o
+ .riscv.attributes
+                0x0000003a       0x38 /tmp/ccCx7Gtc.o
+ .riscv.attributes
+                0x00000072       0x38 /tmp/cclGZcDn.o
+
+.comment        0x00000000       0x2b
+ .comment       0x00000000       0x2b /tmp/ccCx7Gtc.o
+                                 0x2c (size before relaxing)
+ .comment       0x0000002b       0x2c /tmp/cclGZcDn.o
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccCx7Gtc.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/cclGZcDn.o

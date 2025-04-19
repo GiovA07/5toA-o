@@ -1,0 +1,65 @@
+En RISC-V existen distintos niveles de privilegio. La Machine Mode (M-mode) es el nivel más alto y, por defecto, es en el que arranca el procesador.
+
+La modificacion del codigo es para:
+    # Configurar el registro mstatus para que, cuando se ejecute el mret, se salga de M-mode y se entre en S-mode.
+
+    # Preparar el registro mepc con la dirección del código de entrada para S-mode (la etiqueta supervisor).
+
+    Configurar los registros de Physical Memory Protection (PMP) para permitir que el S-mode y U-mode tengan acceso completo a la memoria.
+
+    Delegar las interrupciones y excepciones a S-mode mediante los registros mideleg y medeleg.
+
+    Finalmente, ejecutar la instrucción mret para salir de M-mode.
+
+
+
+En el codigo al principio se da la configuracion para cambiar a S-mode
+
+        csrr    t2, mstatus            # Lee el registro mstatus en t2
+        li      t3, ~(0x3 << 11)       # Prepara una máscara para limpiar los 2 bits (MPP)
+        and     t2, t2, t3             # Limpia (pone a 0) los bits MPP en t2
+        li      t4, (0x1 << 11)        # Prepara el valor para S-mode (MPP = 01)
+        or      t2, t2, t4             # Setea t2 para que MPP sea 01 (S-mode)
+        csrw    mstatus, t2            # Escribe la nueva configuración de mstatus
+
+
+    El campo MPP en el registro mstatus determina a qué modo se volverá cuando se ejecute mret.
+
+        - Se usa una máscara para borrar los dos bits que corresponden a MPP.
+        - Luego, se establece el valor 01 (en bits) para indicar Supervisor Mode (S-mode).
+        - De esta manera, al ejecutar mret se hará la transición a S-mode.
+        
+
+    
+    Carga en mepc, la direccion para saltar a la etiqueta supervisor
+
+        la      t0, supervisor       # Carga la dirección de la etiqueta 'supervisor' en t0
+        csrw    mepc, t0             # Escribe esa dirección en mepc
+    
+        - El registro mepc guarda la dirección a la que mret va a saltar. Se le asigna la dirección de la función o código supervisor, 
+          para que al ejecutar mret, la ejecución comience en el código S-mode.
+
+
+    NO ENTENDI ESTO
+          # Set up PMP to allow S-mode and U-mode full access to memory
+          li      t5, 0x1F               # NAPOT + R/W/X permissions
+          csrw    pmpcfg0, t5            # Write to pmpcfg0
+          li      t6, -1                 # All ones to cover entire address space
+          csrw    pmpaddr0, t6           # Write to pmpaddr0
+
+    
+
+    Delegar interrupciones y excepciones a S-mode
+    # Delegate interrupts and exceptions to S-mode
+            li      t5, 0xffff
+            csrs    medeleg, t5
+            csrs    mideleg, t5
+
+        Los registros medeleg y mideleg permiten que ciertas excepciones e interrupciones sean manejadas en S-mode, en lugar de hacerlo en M-mode.
+        Esto es importante para que el kernel (ejecutándose en S-mode) se encargue del manejo de eventos y excepciones.
+
+    
+        
+    La instrucción mret utiliza el valor de mepc (que apunta a supervisor) y el campo MPP en mstatus (ahora configurado para S-mode) para:
+    Cambiar el nivel de privilegio de la CPU a S-mode.
+    Saltar a la dirección indicada en mepc

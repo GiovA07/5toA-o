@@ -1,0 +1,72 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x80000000         0x08000000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /tmp/cc7ouhjR.o
+LOAD /tmp/ccUBktxn.o
+                0x80000000                        . = 0x80000000
+
+.text           0x80000000       0xa8
+ *(.text.boot)
+ *(.text .text.*)
+ .text          0x80000000        0xc /tmp/cc7ouhjR.o
+                0x80000000                boot
+ .text          0x8000000c       0x9c /tmp/ccUBktxn.o
+                0x8000000c                console_putc
+                0x80000040                console_puts
+                0x80000084                kernel_main
+
+.rodata         0x800000a8        0xe
+ *(.rodata .rodata.*)
+ .rodata.str1.4
+                0x800000a8        0xe /tmp/ccUBktxn.o
+
+.eh_frame       0x800000b8       0x84
+ .eh_frame      0x800000b8       0x84 /tmp/ccUBktxn.o
+
+.eh_frame_hdr   0x8000013c       0x24
+ .eh_frame_hdr  0x8000013c       0x24 /tmp/ccUBktxn.o
+                0x8000013c                __GNU_EH_FRAME_HDR
+
+.rela.dyn       0x80000160        0x0
+ .rela.text     0x80000160        0x0 /tmp/cc7ouhjR.o
+
+.data           0x80000160        0x0
+ *(.data .data.*)
+ .data          0x80000160        0x0 /tmp/cc7ouhjR.o
+ .data          0x80000160        0x0 /tmp/ccUBktxn.o
+
+.bss            0x80000160        0x0
+                0x80000160                        __bss = .
+ *(.bss .bss.* .sbss .sbss.*)
+ .bss           0x80000160        0x0 /tmp/cc7ouhjR.o
+ .bss           0x80000160        0x0 /tmp/ccUBktxn.o
+                0x80000160                        __bss_end = .
+                0x80001000                        . = ALIGN (0x1000)
+                0x80001000                        __stack0 = .
+                0x80002000                        . = (. + 0x1000)
+                0x80002000                        __kernel_end = .
+OUTPUT(kernel elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x3c
+ .riscv.attributes
+                0x00000000       0x36 /tmp/cc7ouhjR.o
+ .riscv.attributes
+                0x00000036       0x3c /tmp/ccUBktxn.o
+
+.comment        0x00000000       0x2b
+ .comment       0x00000000       0x2b /tmp/ccUBktxn.o
+                                 0x2c (size before relaxing)
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccUBktxn.o
