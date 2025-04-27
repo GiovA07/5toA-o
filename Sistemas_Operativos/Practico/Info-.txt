@@ -1,0 +1,288 @@
+
+
+
+######################## HELLO-WORD ########################
+
+# Info Que Saque yo para entenderlo mejor
+
+
+Proceso de Arranque en RISC-V
+    Secuencia de Boot
+
+    Modo Machine (M-mode):
+        Cuando se enciende la placa, la CPU inicia en el modo máquina (M-mode), el cual permite ejecutar código privilegiado.
+        La CPU comienza ejecutando el código del Zero Stage Bootloader (ZSBL) que se encuentra en ROM o FLASH de la placa.
+
+    Carga del Kernel:
+        El bootloader se encarga de cargar la imagen del kernel desde un dispositivo de almacenamiento principal 
+        (en QEMU, se especifica mediante la opción -kernel <kernel-image>) en la dirección de memoria física 0x80000000.
+
+    Transferencia de Control:
+        Una vez cargado el kernel en memoria, el bootloader hace un jump (salto) a la dirección 0x80000000, donde se encuentra la función boot(). 
+        Esta función es el punto de entrada en el kernel.
+
+
+3. Detalle del Código Fuente
+
+    3.1. Archivo kernel.c
+
+    Función console_putc(char ch):
+        Esta función envía un carácter individual al UART. Antes de escribir en el THR, espera a que el bit 6 del LSR (UART_STATUS_EMPTY) se active, 
+        lo que indica que el THR está vacío y listo para recibir otro carácter.
+
+    Función console_puts(const char *s):
+        Envía una cadena de caracteres al llamar secuencialmente a console_putc() para cada carácter de la cadena.
+
+    Función kernel_main()
+    Mensaje Inicial:
+        Al ejecutarse, el kernel invoca console_puts() para enviar el mensaje "Hello World!\n" a la consola, 
+        lo que permitirá visualizarlo en una terminal conectada al UART.
+
+    Bucle Infinito:
+        Después de imprimir el mensaje, el kernel entra en un bucle infinito (for (;;) { }). 
+        Esto es común en kernels básicos para mantener el sistema funcionando y evitar que se caiga la ejecución tras terminar el código principal.
+
+
+
+Cosas que yo me pregunte: 
+    1. ¿De dónde proviene la dirección 0x80000000?
+        Configuración del sistema RISC-V:
+            En muchas implementaciones y emuladores (como QEMU para RISC-V), se suele configurar la memoria física (la RAM) para que inicie en la 
+            dirección 0x80000000.
+
+    Linker Script:
+        En el linker script (kernel.ld) se especifica que el comienzo de la sección .text (código ejecutable) es justamente en 0x80000000. 
+        Esto establece en qué dirección se debe cargar y ejecutar la imagen del kernel.
+
+
+    ¿Qué es la "memoria física"?
+        RAM (Memoria de Acceso Aleatorio):
+            En este contexto, la "memoria física" se refiere a la RAM, que es la memoria volátil utilizada por el sistema para ejecutar programas. 
+            Después del arranque, el kernel se ejecuta desde la RAM.
+
+    ROM (Memoria de Solo Lectura):
+        La ROM es normalmente utilizada para almacenar el firmware o el bootloader (por ejemplo, el ZSBL en RISC-V) que se encarga de realizar la carga inicial
+        del sistema.
+
+    Diferenciación:
+    El bootloader que se encuentra en ROM carga el kernel desde un medio de almacenamiento (como una imagen en disco o similar) 
+    y lo coloca en la RAM en la dirección 0x80000000. Una vez cargado, el CPU salta a esa dirección y ejecuta el kernel.
+
+    La imagen del kernel se carga en la "memoria física" del sistema emulado (la RAM virtual de QEMU) en la dirección 0x80000000.
+
+    Esa memoria es parte de la asignación de recursos de tu PC, pero no es la memoria física en el mismo sentido que tu PC organiza su propia RAM.
+    
+    ¿Por qué arranca ahí?
+    Convención y Simplicidad en el Diseño:
+        Se elige 0x80000000 como el inicio de la RAM en muchas arquitecturas RISC-V por cuestiones de diseño y convenciones en la organización de la memoria. 
+        Esto facilita la gestión y el mapeo de dispositivos de hardware (como el UART) que se encuentran en otras direcciones de la memoria.
+
+    Facilita el Proceso de Arranque:
+        El bootloader, al cargar la imagen del kernel, sabe exactamente dónde colocarla en la memoria (en la dirección base establecida), 
+        lo que simplifica la transferencia de control al kernel una vez cargado.
+
+    Compatibilidad con QEMU y Otras Plataformas:
+        En entornos de emulación como QEMU, se configura que la memoria RAM del sistema virtual comience en 0x80000000, 
+        de modo que el kernel se cargue en una región de memoria de la que se tiene pleno control y acceso, evitando posibles conflictos con otros mapeos.
+
+
+######################## 01-hello-word ########################
+
+En RISC-V existen distintos niveles de privilegio. La Machine Mode (M-mode) es el nivel más alto y, por defecto, es en el que arranca el procesador.
+
+La modificacion del codigo es para:
+    # Configurar el registro mstatus para que, cuando se ejecute el mret, se salga de M-mode y se entre en S-mode.
+
+    # Preparar el registro mepc con la dirección del código de entrada para S-mode (la etiqueta supervisor).
+
+    # Configurar los registros de Physical Memory Protection (PMP) para permitir que el S-mode y U-mode tengan acceso completo a la memoria.
+
+    # Delegar las interrupciones y excepciones a S-mode mediante los registros mideleg y medeleg.
+
+    # Finalmente, ejecutar la instrucción mret para salir de M-mode.
+
+
+
+En el codigo al principio se da la configuracion para cambiar a S-mode
+
+        csrr    t2, mstatus            # Lee el registro mstatus en t2
+        li      t3, ~(0x3 << 11)       # Prepara una máscara para limpiar los 2 bits (MPP)
+        and     t2, t2, t3             # Limpia (pone a 0) los bits MPP en t2
+        li      t4, (0x1 << 11)        # Prepara el valor para S-mode (MPP = 01)
+        or      t2, t2, t4             # Setea t2 para que MPP sea 01 (S-mode)
+        csrw    mstatus, t2            # Escribe la nueva configuración de mstatus
+
+
+    El campo MPP en el registro mstatus determina a qué modo se volverá cuando se ejecute mret.
+
+        - Se usa una máscara para borrar los dos bits que corresponden a MPP.
+        - Luego, se establece el valor 01 (en bits) para indicar Supervisor Mode (S-mode).
+        - De esta manera, al ejecutar mret se hará la transición a S-mode.
+        
+
+    
+    Carga en mepc, la direccion para saltar a la etiqueta supervisor
+
+        la      t0, supervisor       # Carga la dirección de la etiqueta 'supervisor' en t0
+        csrw    mepc, t0             # Escribe esa dirección en mepc
+    
+        - El registro mepc guarda la dirección a la que mret va a saltar. Se le asigna la dirección de la función o código supervisor, 
+          para que al ejecutar mret, la ejecución comience en el código S-mode.
+    
+
+    Delegar interrupciones y excepciones a S-mode
+    # Delegate interrupts and exceptions to S-mode
+            li      t5, 0xffff
+            csrs    medeleg, t5
+            csrs    mideleg, t5
+
+        Los registros medeleg y mideleg permiten que ciertas excepciones e interrupciones sean manejadas en S-mode, en lugar de hacerlo en M-mode.
+        Esto es importante para que el kernel (ejecutándose en S-mode) se encargue del manejo de eventos y excepciones.
+
+
+    La instrucción mret utiliza el valor de mepc (que apunta a supervisor) y el campo MPP en mstatus (ahora configurado para S-mode) para:
+    Cambiar el nivel de privilegio de la CPU a S-mode.
+    Saltar a la dirección indicada en mepc
+
+
+######################## 04-Context-Switch ########################
+
+Un context switch (cambio de contexto) es cuando el sistema interrumpe la ejecución de una tarea y cambia a otra, guardando el estado actual 
+(registro, pila, PC, etc.) para poder retomarla más tarde. Esto es básico para tener multitarea, aunque en este caso se está hablando de algo más simple: 
+coroutines.
+
+Coroutines (o tareas cooperativas)
+    A diferencia de los hilos reales que pueden ser preemptive (interrumpidos por el sistema), las coroutines se transfieren el control de manera voluntaria.
+    Es decir, una coroutine le pasa el control a otra a través de una llamada explícita como yield() o resume().
+
+    Entonces el texto te dice: "A task or coroutine transfers control to another by resuming execution of other task.”
+    Lo cual significa: una tarea no es interrumpida por el sistema, sino que ella misma decide cuándo ceder el control a otra.
+
+¿Qué se guarda al cambiar de contexto?
+“Each task has its own stack and its program counter.”
+
+    Osea cada coroutine tiene:
+        # Su propio stack: donde se almacenan variables locales, argumentos de funciones, direcciones de retorno...   
+        # Su propio program counter (PC): que indica en qué parte del código está ejecutándose.
+
+    Entonces, para hacer el switch, se necesita:
+        # Guardar los registros actuales (incluyendo PC y SP, el stack pointer).
+        # Cargar los registros de la coroutine que queremos reanudar.
+        # Saltar (hacer ret o similar) a su dirección guardada.
+
+
+En el stack, tenemos información de control sobre las variables locales y los argumentos de las funciones. 
+Además, generalmente debemos guardar las direcciones de retorno de las funciones.
+
+
+## Tecnica
+
+Al crear un nuevo hilo, definimos su pila y la inicializamos con los valores de los registros guardados. También se guarda la dirección de retorno 
+o de continuación con la dirección de función de entrada (inicial) del hilo (la dirección a la que se va a saltar cuando se haga un ret).
+
+En RISC-V, la instrucción de retorno `ret` copia al contador de programa `pc` el valor del registro de dirección de retorno `ra`.
+
+## El paso a paso de como funciona: 
+    
+    1. Inicialización del thread `init_task_context(pc, &sp)`
+        Cuando creás un nuevo thread:
+            - Se le asigna su propia pila.
+        Se inicializa esa pila manualmente con:
+            - Genera los espacios como (s0 a s11 y ra).
+            - El valor del program counter (pc) donde debe empezar ese hilo (recibido como primer argumento). Lo guarda en su respectivo 'ra'.
+            - Esto permite que, cuando se haga ret, se salte directamente al comienzo del nuevo hilo.
+
+    En si el context switch es una transferencia de control de un hilo en ejecución o actual a uno nuevo.
+
+    
+    2. Cambio de contexto `switch_context(&current_sp, &next_sp)`
+        Esta funcion detiene el hilo actual y lo reanuda al siguiente. Aca, los hilos se representan mediante sus punteros de pila.
+
+        # El argumento `current_sp` es un parámetro de salida. Tomará el nuevo puntero de pila del hilo actual (apuntado por el registro `sp`).
+            Basicamente es un puntero a la pila del hilo que está corriendo (para guardar el contexto del hilo que se esta deteniendo).
+
+        # El argumento `next_sp` es la dirección (referencia) al puntero de pila del siguiente hilo (hilo que quieres reanudar). 
+            El nuevo estado del hilo se extrae de `next_sp` y se actualiza.
+            Basicamente es un puntero a la pila del hilo al que queremos saltar (para restaurar su contexto).
+
+        Esta función realiza los siguientes pasos:
+
+            1. Guarda (push) los registros de la CPU (*hace push de todos los registros callee‑saved (incluido ra) sobre la pila del hilo que se está deteniendo*) 
+            en `prev_sp` dado y lo actualiza a la parte superior de la pila (sp apunta al nuevo tope de esa pila y lo guarda en prev_sp).
+
+            2. Carga/Actualiza el registro `sp` de la CPU al valor almacenado en next_sp para que apunte a la siguiente parte superior de la pila 
+            (que queremos reanudar).
+
+            3. Restaura (pop) los valores de los registros de la CPU de la pila que se quiere restaurar.
+            Restaura el registro de dirección de retorno del programa (`ra`) y los registros callee-saved. 
+            Luego ejecuta la instruccion `ret` saltará a esta dirección ('ra'), reanudando la ejecucion de ese hilo en el punto de cuando se realizo el switch 
+            (cuando abandonó la CPU).
+
+
+## Probando el context switch
+    En la función `kernel_main()`, creamos un hilo (o *tarea*) que se iniciará en la función `task_a()`.
+    Luego, transferimos el control al hilo `task_a`. El nuevo hilo imprime un mensaje y devuelve el control al hilo principal.
+
+
+######################## 05-tasks ########################
+
+Creamos un módulo de tareas (En los archivos `task.h` y `task.c`).
+
+# Hilos Cooperativos (corrutinas)
+    Implementamos hilos cooperativos (corrutinas) porque cada hilo abandona voluntariamente la CPU (ceden el uso de la CPU).
+    Este proceso de ceder el control se llama yield.
+
+
+# tasks
+    Una tarea se representa mediante el tipo `struct task`. En `task.c` se define una tabla de bloques de control de tareas/procesos.
+
+    Cada tarea tiene: 
+    Process ID: Identificador único de la tarea.
+    State (Estado): Puede ser TASK_RUNNABLE (lista para ejecutarse) o TASK_RUNNING (en ejecución).
+    Stack (Pila): Área de memoria reservada para la tarea.
+    Saved Stack Pointer: Puntero que indica la cima de la pila cuando la tarea no está activa.
+
+    Tabla de Control de Tareas
+        Definición: En task.c, se define una tabla llamada tasks[] que actúa como una task/process control block table.
+        Función: Es un arreglo que almacena descriptores (struct task) para cada tarea en el sistema.
+
+    
+    Función: create_task(fn_address) crea una nueva tarea.
+        Proceso:
+            - Busca un espacio vacío en la tabla tasks[].
+            - Inicializa el descriptor de la tarea en ese espacio, configurando su estado, pila y otros campos necesarios 
+            (similar a un paso previo de context-switch).
+            - La tarea estará lista para ejecutarse desde la función en fn_address.
+
+
+
+    La *tarea actual* (un puntero al descriptor de tarea por CPU) Se modifica en cada context switch (cambio de contexto) para apuntar a la tarea activa.
+
+
+    Función yield()
+        - Permite que una tarea ceda el control voluntariamente.
+        Esto lo hace mediante: 
+            - Cambia el estado de la tarea actual de TASK_RUNNING a TASK_RUNNABLE.
+            - Llama a scheduler() para seleccionar la próxima tarea.
+
+    Scheduler (Planificador)
+        - Selecciona la próxima tarea a ejecutar.
+        - Se selecciona esta siguiente tarea mediante la estretegia: round-robin (las tareas se ejecutan en orden secuencial cíclico).
+
+        - Una vez seleccionada la tarea, realiza el context switch:
+            - Actualiza el puntero current task.
+            - Restaura el estado de la nueva tarea (como su saved stack pointer).
+
+
+
+    # Prueba de estos tasks
+
+        La función principal del kernel crea dos tareas: `task_a` y `task_b`, y llama a `scheduler()`.
+        Cada tarea inicia un bucle infinito que imprime un mensaje, realiza un pequeño *bucle de espera ocupado* y luego llama a `yield()`.
+
+        Basicamente en cada task:
+            - Imprime un mensaje: Indica que la tarea está en ejecución.
+            - Busy Wait Loop: Ejecuta un pequeño bucle de espera ocupada (simula trabajo).
+            - Llama a yield(): Cede el control para que la otra tarea se ejecute.
+
+    

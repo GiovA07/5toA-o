@@ -240,6 +240,7 @@ translated and linked.
 
 
 4. Print the contents (in hexadecimal) of the `.text` section.
+     Comando ejecutado: riscv64-linux-gnu-objdump -s -j .text kernel
 
 Contents of section .text:
  80000000 17210000 13010100 ef00c007 130101ff  .!..............
@@ -255,6 +256,8 @@ Contents of section .text:
  800000a0 732540f1 6f000000                    s%@.o...     
 
 5. Print the contents (in hexadecimal) of the `.rodata` section.
+          Comando ejecutado: riscv64-linux-gnu-objdump -s -j .rodata kernel
+
 Contents of section .rodata:
  800000a8 48656c6c 6f20576f 726c6421 0a00      Hello World!..  
 
