@@ -1,0 +1,176 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /tmp/ccmqAGab.o
+LOAD /tmp/ccKkUCjd.o
+LOAD /tmp/ccVB7UIE.o
+LOAD /tmp/cco8sTiX.o
+LOAD /tmp/ccpHA9EV.o
+LOAD /tmp/cc1KYsBq.o
+LOAD /tmp/ccbZPjYQ.o
+LOAD /tmp/ccx7p0uE.o
+                0x80000000                        . = 0x80000000
+
+.text           0x80000000     0x13ac
+ *(.text.boot)
+ *(.text .text.*)
+ .text          0x80000000      0x290 /tmp/ccmqAGab.o
+                0x80000000                boot
+                0x800000b0                context_switch
+ .text          0x80000290       0x4c /tmp/ccKkUCjd.o
+                0x80000290                next_timer_interrupt
+ .text          0x800002dc       0x90 /tmp/ccVB7UIE.o
+                0x800002dc                console_putc
+                0x80000310                console_puts
+ .text          0x8000036c      0x34c /tmp/cco8sTiX.o
+                0x8000036c                memset
+                0x8000039c                memcpy
+                0x800003d4                strlen
+                0x80000414                strcpy
+                0x80000458                strcmp
+                0x8000049c                printf
+ .text          0x800006b8      0x170 /tmp/ccpHA9EV.o
+                0x800006b8                task_a
+                0x80000710                task_b
+                0x80000770                kernel_main
+ .text          0x80000828      0x164 /tmp/cc1KYsBq.o
+                0x80000828                push_irq_off
+                0x800008b0                pop_irq_off
+                0x80000918                acquire
+                0x8000095c                release
+ .text          0x8000098c      0x860 /tmp/ccbZPjYQ.o
+                0x8000098c                init_tasks
+                0x800009f0                current_task
+                0x80000a28                init_task
+                0x80000a60                create_task
+                0x80000bec                scheduler
+                0x80000ce4                yield
+                0x80000e00                suspend
+                0x80000efc                wakeup
+                0x80000fd8                sleep
+                0x8000106c                get_ticks
+                0x800010b8                inc_ticks
+                0x800011ac                terminate
+ .text          0x800011ec      0x1c0 /tmp/ccx7p0uE.o
+                0x800011ec                trap
+
+.rodata         0x800013ac      0x1c5
+ *(.rodata .rodata.*)
+ .rodata.str1.4
+                0x800013ac      0x1c5 /tmp/cco8sTiX.o
+                                 0x11 (size before relaxing)
+ .rodata.str1.4
+                0x80001571       0xad /tmp/ccpHA9EV.o
+ .rodata.str1.4
+                0x80001571       0x63 /tmp/ccbZPjYQ.o
+ .rodata.str1.4
+                0x80001571       0xa1 /tmp/ccx7p0uE.o
+
+.eh_frame       0x80001574      0x5b0
+ .eh_frame      0x80001574       0x38 /tmp/ccKkUCjd.o
+ .eh_frame      0x800015ac       0x50 /tmp/ccVB7UIE.o
+                                 0x64 (size before relaxing)
+ .eh_frame      0x800015fc      0x130 /tmp/cco8sTiX.o
+                                0x144 (size before relaxing)
+ .eh_frame      0x8000172c       0x7c /tmp/ccpHA9EV.o
+                                 0x90 (size before relaxing)
+ .eh_frame      0x800017a8       0x9c /tmp/cc1KYsBq.o
+                                 0xb0 (size before relaxing)
+ .eh_frame      0x80001844      0x298 /tmp/ccbZPjYQ.o
+                                0x2ac (size before relaxing)
+ .eh_frame      0x80001adc       0x48 /tmp/ccx7p0uE.o
+                                 0x5c (size before relaxing)
+
+.eh_frame_hdr   0x80001b24       0xf4
+ .eh_frame_hdr  0x80001b24       0xf4 /tmp/ccKkUCjd.o
+                0x80001b24                __GNU_EH_FRAME_HDR
+
+.rela.dyn       0x80001c18        0x0
+ .rela.text     0x80001c18        0x0 /tmp/ccmqAGab.o
+
+.data           0x80001c18        0x0
+ *(.data .data.*)
+ .data          0x80001c18        0x0 /tmp/ccmqAGab.o
+ .data          0x80001c18        0x0 /tmp/ccKkUCjd.o
+ .data          0x80001c18        0x0 /tmp/ccVB7UIE.o
+ .data          0x80001c18        0x0 /tmp/cco8sTiX.o
+ .data          0x80001c18        0x0 /tmp/ccpHA9EV.o
+ .data          0x80001c18        0x0 /tmp/cc1KYsBq.o
+ .data          0x80001c18        0x0 /tmp/ccbZPjYQ.o
+ .data          0x80001c18        0x0 /tmp/ccx7p0uE.o
+
+.bss            0x80001c18    0x10be4
+                0x80001c18                        __bss = .
+ *(.bss .bss.* .sbss .sbss.*)
+ .bss           0x80001c18        0x0 /tmp/ccmqAGab.o
+ .bss           0x80001c18        0x0 /tmp/ccKkUCjd.o
+ .bss           0x80001c18        0x0 /tmp/ccVB7UIE.o
+ .sbss          0x80001c18        0x4 /tmp/ccVB7UIE.o
+                0x80001c18                console_lock
+ .bss           0x80001c1c        0x0 /tmp/cco8sTiX.o
+ .bss           0x80001c1c        0x0 /tmp/ccpHA9EV.o
+ .sbss          0x80001c1c        0x4 /tmp/ccpHA9EV.o
+ .bss           0x80001c20        0x0 /tmp/cc1KYsBq.o
+ .bss           0x80001c20    0x10bd0 /tmp/ccbZPjYQ.o
+                0x80001c20                cpus_state
+ .sbss          0x800127f0        0xc /tmp/ccbZPjYQ.o
+ .bss           0x800127fc        0x0 /tmp/ccx7p0uE.o
+                0x800127fc                        __bss_end = .
+                0x80013000                        . = ALIGN (0x1000)
+                0x80013000                        __stack0 = .
+                0x80014000                        . = (. + 0x1000)
+                0x80014000                        __kernel_end = .
+OUTPUT(kernel elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x3c
+ .riscv.attributes
+                0x00000000       0x3a /tmp/ccmqAGab.o
+ .riscv.attributes
+                0x0000003a       0x3c /tmp/ccKkUCjd.o
+ .riscv.attributes
+                0x00000076       0x38 /tmp/ccVB7UIE.o
+ .riscv.attributes
+                0x000000ae       0x38 /tmp/cco8sTiX.o
+ .riscv.attributes
+                0x000000e6       0x38 /tmp/ccpHA9EV.o
+ .riscv.attributes
+                0x0000011e       0x3c /tmp/cc1KYsBq.o
+ .riscv.attributes
+                0x0000015a       0x3c /tmp/ccbZPjYQ.o
+ .riscv.attributes
+                0x00000196       0x3c /tmp/ccx7p0uE.o
+
+.comment        0x00000000       0x2b
+ .comment       0x00000000       0x2b /tmp/ccKkUCjd.o
+                                 0x2c (size before relaxing)
+ .comment       0x0000002b       0x2c /tmp/ccVB7UIE.o
+ .comment       0x0000002b       0x2c /tmp/cco8sTiX.o
+ .comment       0x0000002b       0x2c /tmp/ccpHA9EV.o
+ .comment       0x0000002b       0x2c /tmp/cc1KYsBq.o
+ .comment       0x0000002b       0x2c /tmp/ccbZPjYQ.o
+ .comment       0x0000002b       0x2c /tmp/ccx7p0uE.o
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccKkUCjd.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccVB7UIE.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/cco8sTiX.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccpHA9EV.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/cc1KYsBq.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccbZPjYQ.o
+ .note.GNU-stack
+                0x00000000        0x0 /tmp/ccx7p0uE.o
