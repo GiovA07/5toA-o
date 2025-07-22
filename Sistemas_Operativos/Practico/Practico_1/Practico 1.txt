@@ -1,4 +1,6 @@
 
+Ejercicio 1:
+
 a. Listar los procesos que están en estado de ejecución (ver el comando ps, hacer man ps para leer el manual del comando). 
     Con el siguiente comando, aparecen todos los procesos en ejecucion, con sus nombres, ID y usuario que ejecuto.
                                                             ps -ef

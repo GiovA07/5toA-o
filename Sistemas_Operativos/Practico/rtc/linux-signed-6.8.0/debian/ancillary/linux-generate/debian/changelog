@@ -1,0 +1,40 @@
+linux-generate (6.8.0-60.63) noble; urgency=medium
+
+  * Main version: 6.8.0-60.63
+
+ -- Mehmet Basaran <mehmet.basaran@canonical.com>  Tue, 15 Apr 2025 20:30:55 +0300
+
+linux-generate (6.8.0-60.62) noble; urgency=medium
+
+  * Main version: 6.8.0-60.62
+
+  * Packaging resync (LP: #1786013)
+    - [Packaging] debian/tracking-bug -- resync from main package
+
+ -- Mehmet Basaran <mehmet.basaran@canonical.com>  Mon, 14 Apr 2025 12:15:37 +0300
+
+linux-generate (6.8.0-58.60) noble; urgency=medium
+
+  * Main version: 6.8.0-58.60
+
+  * Packaging resync (LP: #1786013)
+    - [Packaging] debian/tracking-bug -- resync from main package
+
+ -- Stefan Bader <stefan.bader@canonical.com>  Fri, 14 Mar 2025 16:57:39 +0100
+
+linux-generate (6.8.0-56.58) noble; urgency=medium
+
+  * Main version: 6.8.0-56.58
+
+  * Packaging resync (LP: #1786013)
+    - [Packaging] update variants
+    - [Packaging] debian/tracking-bug -- resync from main package
+
+ -- Mehmet Basaran <mehmet.basaran@canonical.com>  Fri, 14 Feb 2025 16:06:29 +0300
+
+linux-generate (6.8.0-54.56) noble; urgency=medium
+
+  * Main version: 6.8.0-54.56
+
+ -- Manuel Diewald <manuel.diewald@canonical.com>  Fri, 07 Feb 2025 23:01:08 +0100
+

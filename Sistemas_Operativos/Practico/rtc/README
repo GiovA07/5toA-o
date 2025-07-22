@@ -1,0 +1,33 @@
+Requeriments:
+  1. The `kernel sources` package
+     - On Ubuntu systems do
+       1. apt-get source linux-image-$(uname -r)
+       2. cp /boot/config-$(uname -r) /usr/src/linux-$(uname -r)
+     - On Alpine linux systems
+       1. `apt add linux-<NAME>-dev` where `<NAME>` is `lts` or `virt`,
+          depending on running kernel (do `uname -r`)
+  2. `gcc` (in Ubuntu systems, install `build-essential` package)
+  3. `make`
+
+Compiling module and user test program
+  1. make
+  2. It should generate `rtc.ko` file (_kernel object_)
+  3. Compile the user space test program: `gcc -o testrtc testrtc.c`
+
+Testing
+
+1. Create device special file `/dev/myrtc` as a character device with major
+number=121, minor number=0
+   - `mknod /dev/myrtc c 121 0`
+2. Load the module (`sudo insmod ./rtc.ko`)
+   - You should see "Loading module myrtc" in system log (do `dmesg` command)
+3. Run user program several times, it will show diferent second readings
+4. Unload (command `rmmod rtc`)
+   - You should see "Unloading module myrtc"
+
+- To do
+  1. Modify kernel module to return converted BCD values to 0-59 range.
+  2. Read other cmos registers (hour, minutes, etc)
+  3. Modify the driver adding a write operation to write a data request and then
+     read the response. An user program should write a register number to get
+     and then read the response.

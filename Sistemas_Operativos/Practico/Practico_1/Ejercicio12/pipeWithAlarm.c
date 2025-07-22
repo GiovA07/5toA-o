@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 
 void handleAlarm(int sign) {
-    printf("Recibi la señal SIGALRM\n");
+    printf("Recibi la señal SIG_ALARM\n");
     printf("El proceso ha finalizado.\n");
     exit(EXIT_FAILURE);
 }

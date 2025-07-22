@@ -1,0 +1,1 @@
+savedcmd_/home/giova/Downloads/rtc/rtc.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T scripts/module.lds -o /home/giova/Downloads/rtc/rtc.ko /home/giova/Downloads/rtc/rtc.o /home/giova/Downloads/rtc/rtc.mod.o

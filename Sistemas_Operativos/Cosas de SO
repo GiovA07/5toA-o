@@ -1,0 +1,155 @@
+Sistemas Operativos:
+
+Introduccion:
+    - A que se refiere con el objetivo del sistema operativo: "Virtualizar recursos del     hardware". Y aca entran otros conceptos como el de Multiplexear la CPU.
+
+
+        1. ¿Qué significa “multiplexar la CPU”?
+        Cuando decimos que el SO multiplexa la CPU entre varios procesos, queremos decir que:
+
+        Time–sharing (compartición de tiempo): la CPU se dedica a un proceso durante un breve intervalo (quantum), luego el SO lo detiene y pasa a otro proceso, y así sucesivamente.
+
+        Ilusión de ejecución simultánea: si tienes 4 procesos y una sola CPU, cada uno recibe su “trozo” de tiempo tan rápido que todos parecen ejecutarse a la vez.
+
+        Scheduler: el núcleo (scheduler) decide el orden y duración de esos trozos de tiempo, aplicando políticas (FCFS, Round-Robin, prioridades, etc.) para optimizar uso de CPU, latencia, equidad…
+
+        Ejemplo sencillo:
+
+        P1 corre 10 ms, luego P2 corre 10 ms, luego P3 corre 10 ms…
+
+        Cuando P1 agota su quantum, el kernel interrumpe (timer interrupt), guarda su contexto, y carga el contexto de P2.
+
+        2. ¿Qué es “virtualizar” un recurso de hardware?
+        La virtualización consiste en presentar a cada proceso o usuario una versión “virtual” y aislada de un recurso físico real. El SO se encarga de:
+
+        CPU virtual: el proceso cree que tiene la CPU completa, pero en realidad la comparte (multiplexa).
+
+        Memoria virtual: cada proceso ve su propio espacio de direcciones (0…4 GB en 32 bits), aunque físicamente haya menos memoria o esté fragmentada; el MMU y el SO traducen direcciones virtuales a físicas y usan swapping si hace falta.
+
+        Dispositivos virtuales: el SO ofrece dispositivos lógicos (discos, tarjetas de red, terminales) que en realidad pueden agrupar o particionar dispositivos físicos.
+
+        Sistema de archivos: cada proceso ve un árbol de directorios como si fuera suyo, pero detrás hay bloques en disco gestionados por el kernel.
+
+        ¿Para qué?
+
+        Aislamiento: un fallo o acceso indebido de un proceso no afecta a otros.
+
+        Seguridad: los permisos y el kernel controlan quién accede a qué.
+
+        Flexibilidad: puedes, por ejemplo, montar un disco remoto, cifrarlo, compartirlo en red, etc., todo sin cambiar el programa.
+
+
+
+
+- Cuando hacemos un read o un write ejecutamos una instrucción para que el SO haga la operación que le pedimos. (Se refiere a que se hace una interrupcion al sistema, y se ejecuta el trap handler para esa syscall?).
+
+        ssize_t n = read(fd, buf, count);
+
+
+        El compilador genera una instrucción especial (por ejemplo syscall en x86-64 o int 0x80 en x86) que:
+
+        Cambia a modo kernel (privilegiado).
+
+        Salta a una rutina en el kernel, el trap handler o syscall dispatcher.
+
+        El kernel recibe el número de llamada (SYS_READ), los argumentos (fd, buf, count) y:
+
+        Valida permisos y parámetros.
+
+        Ejecuta la operación de E/S leyendo del dispositivo o cache.
+
+        Copia los datos al buffer del proceso.
+
+        Cuando acaba, el kernel:
+
+        Coloca el valor de retorno (bytes leídos o código de error) en un registro.
+
+        Restablece el contexto del proceso y cambia de nuevo a modo usuario.
+
+        Tu programa continúa justo después de la instrucción syscall, recibiendo el resultado.
+
+
+    
+
+- Maquinas virtuales
+
+
+RISK-V no entiendo que es n hard core y porque tiee un numero y porque es imporante.
+
+
+Interfaces:
+
+- Entender mejor la syscall Exec.
+    Basicamente hace una llamada a un syscall (creo que solo syscalls), luego
+    el proceso corriente, se modifica completamente, Crea una nueva imagen,
+    carga el codigo y datos del nuevo programa y borra toda la memoria del programa
+    anterior. Modifica el pc y ahora ejecuta el que llamaste. Nunca vuelve al proceso
+    que realizo el exec, a menos que no se haya detectado, entonces nunca se hubiera
+    cambiado la imagen y seguiria corriendo el programa. Por eso en el ejemplo
+    usa solo al proceso del fork hijo, asi cuando la cpu vuelva al padre se siga
+    corriendo el programa.
+
+- Entender mejor el syscall Dup.
+    Lo que hace es que agrega una nueva entrada Dumplica (copia) fd en el 
+    primer descriptor no usado, basicamente si nosotros hacemos close(1),
+    que es el descriptor de salida estandar y le pones dup(fd) que es
+    el de un archivo, todo lo que sea salida estandar printf, etc. 
+    Se guardaran en el archivo.
+
+- Entender mejor este comando de la shell cmd n> file
+    Lo que hace es que abre/crea el archivo para la escritura de la salida estandar.
+    Basicamente cambia el descriptor 1 del proceso. 
+
+- Entender mejor este comando de la shell cmd < file
+    Este abre el archivo (file) para lectura y la conecta con el descriptor
+    0 que es la entrada estandar.
+
+- Atributos que tiene un proceso, ver todos.
+- Ver el ejemplo de Redirección de entrada/salida
+- ver mkfifo
+- Trazado (No lo entendi)
+
+
+Procesos y Threads:
+
+    
+    Atributos de un proceso (que deberia guardar)
+    - Imagen de memoria (código, datos, stack), esto se guardaria el puntero a la
+      tabla de pagina del proceso.
+    - Entender para que seria el Stack en modo kernel (uint8 kstack[PAGE_SIZE];), 
+      segun el gpt, dijo que es Perfecto. Esto es lo que usás cuando hacés ecall, 
+      traps, etc.
+
+    - Entender bien la "representacion de la cpu". El multicore, etc.
+
+
+
+Planificacion de uso de CPU
+    - Que es sistemas por lotes (batch systems) dice que los programas se envían y 
+      sealmacenan en un jobs spool.
+
+    - Que es long term scheduler.
+
+    - Linux scheduler
+
+    - Multiprocesadores
+
+
+Concurrencia e IPC:
+    - Solución de Peterson (?)
+
+    - entender el ejemplo de productor consumidor.
+
+Otras preguntas:
+    - En el sistema operativo que estamos realizando, tenemos modo usuario? o 
+      estamos haciendo todo en modo supervisor?.
+    - No entiendo bien la diferencia entre threads y procesos, se las bases pero
+      no entiendo, por ejemplo si hago un fork() creo 2 procesos pero comparten
+      las direcciones de memoria, el heap, text etc. pero pueden ejecutar cosas
+      distintas
+
+    - Porque se pushearian los parametros de los ultimos a los primeros. Para poder tener los primeros mas cerca del sp?
+
+
+
+
